@@ -1,0 +1,20 @@
+#root {
+  width: 100%;
+  max-width: 1366px;
+  padding: 2rem;
+  text-align: center;
+}
+
+.wrapper-default {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.editor-default {
+  background-color: #ffffff;
+  color: #212529;
+  min-height: 15rem;
+  width: 100%;
+  padding: 0 1rem;
+}
