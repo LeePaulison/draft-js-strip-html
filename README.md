@@ -1,8 +1,20 @@
-# React + Vite
+# Draft-JS - Sanitize HTML
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The following implementation of draft-js uses a custom handlePasteText function to Sanitize HTML pasted into the Editor as per tasking requirements.
 
-Currently, two official plugins are available:
+Requirements:
+- Clear color and background-color styles
+- Retain a limited selection of HTML tags and styling for copy/paste operations
+- Sanitize HTML of dangerous attributes and HTML tags that may contain malicious code.
+- Retain unsupported HTML content, but do not retain the HTML tag
+- Remove leading and trailing whitespace of the content as a whole.  Whitespace formatting within the content remains untouched.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Installation
+```bash
+  npm install
+```
+
+## To Run
+```bash
+  npm run dev
+```
