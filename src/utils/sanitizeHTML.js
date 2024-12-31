@@ -36,19 +36,32 @@ export function sanitizeHTML(inputHTML) {
   };
 
   function customTrim(str) {
-    const whitespaceRegex =
-      /^[\s\u1680\u180E\u2000-\u200A\u2028\u2029\u202F\u205F\u3000]+|[\s\u1680\u180E\u2000-\u200A\u2028\u2029\u202F\u205F\u3000]+$/g;
-    const innerWhitespaceRegex = /[\s\u1680\u180E\u2000-\u200A\u2028\u2029\u202F\u205F\u3000]+/g;
-    return str.replace(whitespaceRegex, "").replace(innerWhitespaceRegex, " ");
+    const whitespaceRegex = /^\s+|\s+$/g; // Only trim leading/trailing spaces
+    return str.replace(whitespaceRegex, ""); // Don't collapse inner spaces
   }
-
-  console.log("Input HTML:", inputHTML);
 
   const trimmedHTML = customTrim(inputHTML);
 
-  function isSafeStyle(styles) {
+  // Sanitize and filter out unsafe or disallowed styles
+  function sanitizeStyle(styles) {
     const unsafeKeywords = ["expression", "javascript", "vbscript", "data", "url"];
-    return !unsafeKeywords.some((keyword) => styles.includes(keyword));
+    const disallowedProperties = ["color", "background-color"]; // Explicitly disallow "color"
+
+    // Split the style string into individual declarations
+    const styleDeclarations = styles.split(";").map((s) => s.trim());
+
+    // Filter out unsafe or disallowed properties
+    const sanitizedStyles = styleDeclarations.filter((declaration) => {
+      const [property, value] = declaration.split(":").map((s) => s.trim().toLowerCase());
+      return (
+        property &&
+        value &&
+        !unsafeKeywords.some((keyword) => declaration.includes(keyword)) &&
+        !disallowedProperties.includes(property)
+      );
+    });
+
+    return sanitizedStyles.join("; "); // Return the cleaned-up style string
   }
 
   const parser = new DOMParser();
@@ -62,12 +75,18 @@ export function sanitizeHTML(inputHTML) {
     return document.createTextNode(textContent);
   }
 
+  // Validate and sanitize attributes
   function sanitizeAttributes(node, allowedAttributes) {
     Array.from(node.attributes).forEach((attr) => {
       if (!allowedAttributes.includes(attr.name)) {
         node.removeAttribute(attr.name);
-      } else if (attr.name === "style" && !isSafeStyle(attr.value)) {
-        node.removeAttribute(attr.name);
+      } else if (attr.name === "style") {
+        const sanitizedStyle = sanitizeStyle(attr.value);
+        if (sanitizedStyle) {
+          node.setAttribute("style", sanitizedStyle);
+        } else {
+          node.removeAttribute("style"); // Remove style if it becomes empty
+        }
       }
     });
   }
@@ -146,11 +165,13 @@ export function sanitizeHTML(inputHTML) {
     }
 
     if (node.nodeType === Node.TEXT_NODE) {
-      return processTextNode(node);
+      const textNode = processTextNode(node);
+      return textNode;
     }
 
     if (node.nodeType === Node.ELEMENT_NODE) {
-      return processElementNode(node);
+      const elementNode = processElementNode(node);
+      return elementNode;
     }
 
     return null;

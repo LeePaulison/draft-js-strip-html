@@ -27,7 +27,6 @@ function App() {
   };
 
   const convertHTMLToContentState = (html) => {
-    console.log("HTML to convert:", html);
     const { contentBlocks, entityMap } = htmlToDraft(html);
 
 
@@ -67,17 +66,17 @@ function App() {
             options: [10, 12, 14, 16, 18, 24],
           },
           list: {
-            inDropdown: true,
+            inDropdown: false,
           },
           textAlign: {
-            inDropdown: true,
+            inDropdown: false,
             options: ['left', 'center', 'right'],
           },
           colorPicker: {
             colors: ['rgb(247,218,100)'],
           },
           link: {
-            inDropdown: true,
+            inDropdown: false,
           },
         }}
       />
